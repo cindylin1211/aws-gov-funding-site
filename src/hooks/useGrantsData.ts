@@ -32,6 +32,38 @@ interface Filters {
   agency: string;
 }
 
+// Helper function to match company size
+const matchesCompanySize = (grant: Grant, sizeFilter: string) => {
+  switch (sizeFilter) {
+    case '大型企業':
+      return grant.企業規模.includes('大型企業');
+    case '中小企業':
+      return grant.企業規模.includes('中小企業');
+    case '微型企業':
+      return grant.企業規模.includes('微型企業');
+    case '新創企業':
+      return grant.企業規模.includes('新創企業');
+    default:
+      return true;
+  }
+};
+
+// Helper function to match agency
+const matchesAgency = (grant: Grant, agencyFilter: string) => {
+  switch (agencyFilter) {
+    case '經濟部':
+      return grant.主辦機關分類 === '經濟部';
+    case '數位發展部':
+      return grant.主辦機關分類 === '數位發展部';
+    case '勞動部':
+      return grant.主辦機關分類 === '勞動部';
+    case '地方政府':
+      return grant.主辦機關分類 === '地方政府';
+    default:
+      return true;
+  }
+};
+
 export const useGrantsData = () => {
   const [grantsData, setGrantsData] = useState<GrantsDatabase | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,38 +149,6 @@ export const useGrantsData = () => {
       return true;
     });
   }, [grantsData, filters]);
-
-  // Helper function to match company size
-  const matchesCompanySize = (grant: Grant, sizeFilter: string) => {
-    switch (sizeFilter) {
-      case '大型企業':
-        return grant.企業規模.includes('大型企業');
-      case '中小企業':
-        return grant.企業規模.includes('中小企業');
-      case '微型企業':
-        return grant.企業規模.includes('微型企業');
-      case '新創企業':
-        return grant.企業規模.includes('新創企業');
-      default:
-        return true;
-    }
-  };
-
-  // Helper function to match agency
-  const matchesAgency = (grant: Grant, agencyFilter: string) => {
-    switch (agencyFilter) {
-      case '經濟部':
-        return grant.主辦機關分類 === '經濟部';
-      case '數位發展部':
-        return grant.主辦機關分類 === '數位發展部';
-      case '勞動部':
-        return grant.主辦機關分類 === '勞動部';
-      case '地方政府':
-        return grant.主辦機關分類 === '地方政府';
-      default:
-        return true;
-    }
-  };
 
   // Update filters
   const updateFilter = (filterType: string, value: string) => {
