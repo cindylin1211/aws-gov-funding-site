@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> AWS 政府補助計畫搜尋器 | 快速找到適合您客戶的政府補助方案</title>
+    <meta name="description" content="一站式政府補助計畫搜尋平台，涵蓋數位轉型、創新研發、人才培訓等各類補助方案。快速篩選、詳細資訊、即時更新，助您輕鬆申請政府補助。" />
+    <meta name="keywords" content="政府補助,創業補助,數位轉型補助,SBIR,SIIR,研發補助,中小企業補助,新創補助" />
+    <meta name="author" content="政府補助計畫搜尋器" />
+    <link rel="canonical" href="https://grants-search.lovable.app" />
+
+    <meta property="og:title" content="政府補助計畫搜尋器 | 快速找到適合的政府補助方案" />
+    <meta property="og:description" content="一站式政府補助計畫搜尋平台，涵蓋數位轉型、創新研發、人才培訓等各類補助方案。快速篩選、詳細資訊、即時更新，助您輕鬆申請政府補助。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://grants-search.lovable.app/og-image.png" />
+    <meta property="og:url" content="https://grants-search.lovable.app" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="政府補助計畫搜尋器" />
+    <meta name="twitter:description" content="快速找到適合的政府補助方案，涵蓋數位轉型、創新研發、人才培訓等各類補助。" />
+    <meta name="twitter:image" content="https://grants-search.lovable.app/og-image.png" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "政府補助計畫搜尋器",
+      "description": "一站式政府補助計畫搜尋平台，助您快速找到適合客戶的補助方案",
+      "url": "https://grants-search.lovable.app",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "TWD"
+      }
+    }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
