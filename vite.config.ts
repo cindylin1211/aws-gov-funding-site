@@ -16,10 +16,3 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  base: '/aws-gov-funding-site/', // 
-  plugins: [react()],
-})
