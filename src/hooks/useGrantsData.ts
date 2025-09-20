@@ -81,13 +81,18 @@ export const useGrantsData = () => {
   useEffect(() => {
     const loadGrantsData = async () => {
       try {
+        console.log('開始載入補助資料...');
         const response = await fetch('/grants-database.json');
+        console.log('Response status:', response.status);
         if (!response.ok) {
           throw new Error('無法載入補助資料');
         }
         const data = await response.json();
+        console.log('載入的資料:', data);
+        console.log('補助數量:', data.grants?.length);
         setGrantsData(data);
       } catch (err) {
+        console.error('載入資料錯誤:', err);
         setError(err instanceof Error ? err.message : '載入資料時發生錯誤');
       } finally {
         setLoading(false);
@@ -118,7 +123,7 @@ export const useGrantsData = () => {
         }
       }
 
-      // Sub category filter
+      // Sub category filter  
       if (filters.subCategory) {
         if (grant.子分類 !== filters.subCategory) {
           return false;
@@ -127,7 +132,7 @@ export const useGrantsData = () => {
 
       // Company size filter
       if (filters.companySize) {
-        if (!matchesCompanySize(grant, filters.companySize)) {
+        if (!grant.企業規模 || !grant.企業規模.includes(filters.companySize)) {
           return false;
         }
       }
@@ -141,7 +146,7 @@ export const useGrantsData = () => {
 
       // Agency filter
       if (filters.agency) {
-        if (!matchesAgency(grant, filters.agency)) {
+        if (grant.主辦機關分類 !== filters.agency) {
           return false;
         }
       }
