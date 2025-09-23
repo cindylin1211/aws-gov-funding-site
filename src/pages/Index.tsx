@@ -17,6 +17,7 @@ const Index = () => {
   const [sortBy, setSortBy] = useState('default');
 
   const handleGrantClick = (grant: any) => {
+    console.log('handleGrantClick called with grant:', grant);
     setSelectedGrant(grant);
     setIsModalOpen(true);
   };

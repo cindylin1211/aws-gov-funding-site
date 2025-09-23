@@ -52,7 +52,11 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
   return (
     <Card 
       className="group cursor-pointer transition-all duration-normal hover:shadow-lg hover:-translate-y-1 bg-gradient-card border-border/50"
-      onClick={onClick}
+      onClick={(e) => {
+        console.log('Card clicked, event target:', e.target);
+        console.log('Card onClick called');
+        onClick();
+      }}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
@@ -116,7 +120,9 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
           size="sm" 
           className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-fast"
           onClick={(e) => {
+            console.log('Button clicked, stopping propagation');
             e.stopPropagation();
+            e.preventDefault();
             onClick();
           }}
         >
