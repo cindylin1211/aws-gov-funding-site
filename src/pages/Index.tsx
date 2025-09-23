@@ -105,6 +105,7 @@ const Index = () => {
                 onFilterChange={updateFilter}
                 categoriesData={grantsData.categories}
                 filtersData={grantsData.filters}
+                totalGrantsCount={grantsData.grants?.length || 0}
               />
             )}
           </aside>

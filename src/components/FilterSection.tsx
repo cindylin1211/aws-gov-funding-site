@@ -14,9 +14,10 @@ interface FilterSectionProps {
   onFilterChange: (filterType: string, value: string) => void;
   categoriesData: any;
   filtersData: any;
+  totalGrantsCount: number;
 }
 
-const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData }: FilterSectionProps) => {
+const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, totalGrantsCount }: FilterSectionProps) => {
   const handleMainCategoryChange = (category: string) => {
     onFilterChange('mainCategory', category);
     if (category !== filters.mainCategory) {
@@ -50,7 +51,7 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData }:
               onClick={() => handleMainCategoryChange('all')}
               className="h-9"
             >
-              全部 (19)
+              全部 ({totalGrantsCount})
             </Button>
             {categoriesData.main.map((category: any) => (
               <Button
