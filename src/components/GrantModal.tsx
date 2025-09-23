@@ -164,10 +164,16 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
               </div>
               <div className="space-y-2 pl-7">
                 {grant.參考資料.map((reference, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{reference}</span>
-                  </div>
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    className="h-auto p-2 justify-start text-left"
+                    onClick={() => window.open(reference, '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2 shrink-0" />
+                    <span className="text-sm break-all">{reference}</span>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -176,23 +182,23 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
           <Separator />
 
           {/* Action Buttons */}
-          <div className="flex gap-3 justify-end">
-            <Button variant="outline" onClick={onClose}>
-              關閉
-            </Button>
-            <Button
-              className="bg-gradient-primary"
-              onClick={() =>
-                window.open(
-                  "https://pages.awscloud.com/aws-gov-fund-registration.html",
-                  "_blank"
-                )
-              }
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              前往申請
-            </Button>
-          </div>
+<div className="flex gap-3 justify-end">
+  <Button variant="outline" onClick={onClose}>
+    關閉
+  </Button>
+  <Button
+    className="bg-gradient-primary"
+    onClick={() =>
+      window.open(
+        "https://pages.awscloud.com/aws-gov-fund-registration.html",
+        "_blank"
+        )
+       }
+      >
+      <ExternalLink className="h-4 w-4 mr-2" />
+       前往申請
+       </Button>
+        </div>
         </div>
       </DialogContent>
     </Dialog>
