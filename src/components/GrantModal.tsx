@@ -164,9 +164,16 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
               </div>
               <div className="space-y-2 pl-7">
                 {grant.參考資料.map((reference, index) => (
-                  <div key={index} className="flex items-center gap-2">
+                  <div 
+                    key={index} 
+                    className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => {
+                      const url = reference.startsWith('http') ? reference : `https://${reference}`;
+                      window.open(url, '_blank');
+                    }}
+                  >
                     <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{reference}</span>
+                    <span className="text-muted-foreground hover:text-primary transition-colors">{reference}</span>
                   </div>
                 ))}
               </div>
@@ -180,7 +187,20 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
             <Button variant="outline" onClick={onClose}>
               關閉
             </Button>
-            <Button className="bg-gradient-primary">
+            <Button 
+              className="bg-gradient-primary"
+              onClick={() => {
+                // 使用第一個參考資料連結，如果沒有則顯示提示
+                if (grant.參考資料 && grant.參考資料.length > 0) {
+                  const firstLink = grant.參考資料[0];
+                  // 如果連結不是完整URL，假設是相對路徑
+                  const url = firstLink.startsWith('http') ? firstLink : `https://${firstLink}`;
+                  window.open(url, '_blank');
+                } else {
+                  alert('暫無申請連結');
+                }
+              }}
+            >
               <ExternalLink className="h-4 w-4 mr-2" />
               前往申請
             </Button>

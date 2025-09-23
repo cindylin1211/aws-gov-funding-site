@@ -115,6 +115,10 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
           variant="outline" 
           size="sm" 
           className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-fast"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
         >
           查看詳細資訊
         </Button>
