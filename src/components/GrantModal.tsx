@@ -37,10 +37,10 @@ interface Grant {
 interface GrantModalProps {
   grant: Grant | null;
   isOpen: boolean;
-  onClose: () => void;
+  setIsOpen: (open: boolean) => void; // 改用 setIsOpen 控制開關
 }
 
-const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
+const GrantModal = ({ grant, isOpen, setIsOpen }: GrantModalProps) => {
   if (!grant) return null;
 
   const getCategoryColor = (category: string) => {
@@ -57,7 +57,7 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-card">
         <DialogHeader className="space-y-4">
           <div className="flex items-start justify-between gap-4">
@@ -69,9 +69,7 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
                 {grant.補助類別}
               </Badge>
               {grant.子分類 && (
-                <Badge variant="outline">
-                  {grant.子分類}
-                </Badge>
+                <Badge variant="outline">{grant.子分類}</Badge>
               )}
             </div>
           </div>
@@ -87,7 +85,7 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
                 <p className="font-semibold text-foreground">{grant.補助金額}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Users className="h-5 w-5 text-primary" />
               <div>
@@ -95,7 +93,7 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
                 <p className="font-semibold text-foreground">{grant.補助比例上限}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Clock className="h-5 w-5 text-accent" />
               <div>
@@ -103,7 +101,7 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
                 <p className="font-semibold text-foreground">{grant.計畫時程}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-muted-foreground" />
               <div>
@@ -149,9 +147,7 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
               <h3 className="text-lg font-semibold text-foreground">適用企業規模</h3>
               <div className="flex flex-wrap gap-2 pl-7">
                 {grant.企業規模.map((size, index) => (
-                  <Badge key={index} variant="outline">
-                    {size}
-                  </Badge>
+                  <Badge key={index} variant="outline">{size}</Badge>
                 ))}
               </div>
             </div>
@@ -164,16 +160,10 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
               </div>
               <div className="space-y-2 pl-7">
                 {grant.參考資料.map((reference, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    className="h-auto p-2 justify-start text-left"
-                    onClick={() => window.open(reference, '_blank')}
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2 shrink-0" />
-                    <span className="text-sm break-all">{reference}</span>
-                  </Button>
+                  <div key={index} className="flex items-center gap-2">
+                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">{reference}</span>
+                  </div>
                 ))}
               </div>
             </div>
@@ -182,23 +172,23 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
           <Separator />
 
           {/* Action Buttons */}
-<div className="flex gap-3 justify-end">
-  <Button variant="outline" onClick={onClose}>
-    關閉
-  </Button>
-  <Button
-    className="bg-gradient-primary"
-    onClick={() =>
-      window.open(
-        "https://pages.awscloud.com/aws-gov-fund-registration.html",
-        "_blank"
-        )
-       }
-      >
-      <ExternalLink className="h-4 w-4 mr-2" />
-       前往申請
-       </Button>
-        </div>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              關閉
+            </Button>
+            <Button
+              className="bg-gradient-primary"
+              onClick={() =>
+                window.open(
+                  "https://pages.awscloud.com/aws-gov-fund-registration.html",
+                  "_blank"
+                )
+              }
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              前往申請
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
