@@ -173,12 +173,7 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
             <Button 
               className="bg-gradient-primary"
               onClick={() => {
-                // 使用第一個參考資料連結
-                if (grant.參考資料 && grant.參考資料.length > 0) {
-                  window.open(grant.參考資料[0].url, '_blank');
-                } else {
-                  alert('暫無申請連結');
-                }
+                window.open('https://pages.awscloud.com/aws-gov-fund-registration.html', '_blank');
               }}
             >
               <ExternalLink className="h-4 w-4 mr-2" />
