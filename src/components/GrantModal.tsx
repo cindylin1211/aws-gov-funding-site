@@ -16,23 +16,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface Grant {
-  id: string;
-  計畫名稱: string;
-  補助類別: string;
-  子分類: string;
-  補助重點: string;
-  補助對象: string[];
-  補助金額: string;
-  補助比例上限: string;
-  計畫時程: string;
-  主辦單位: string;
-  參考資料: string[];
-  企業規模: string[];
-  金額分類: string;
-  主辦機關分類: string;
-}
+import { Grant } from "@/types/grant";
 
 interface GrantModalProps {
   grant: Grant | null;
@@ -168,12 +152,11 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
                     key={index} 
                     className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
                     onClick={() => {
-                      const url = reference.startsWith('http') ? reference : `https://${reference}`;
-                      window.open(url, '_blank');
+                      window.open(reference.url, '_blank');
                     }}
                   >
                     <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground hover:text-primary transition-colors">{reference}</span>
+                    <span className="text-muted-foreground hover:text-primary transition-colors">{reference.text}</span>
                   </div>
                 ))}
               </div>
@@ -190,12 +173,9 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
             <Button 
               className="bg-gradient-primary"
               onClick={() => {
-                // 使用第一個參考資料連結，如果沒有則顯示提示
+                // 使用第一個參考資料連結
                 if (grant.參考資料 && grant.參考資料.length > 0) {
-                  const firstLink = grant.參考資料[0];
-                  // 如果連結不是完整URL，假設是相對路徑
-                  const url = firstLink.startsWith('http') ? firstLink : `https://${firstLink}`;
-                  window.open(url, '_blank');
+                  window.open(grant.參考資料[0].url, '_blank');
                 } else {
                   alert('暫無申請連結');
                 }

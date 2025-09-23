@@ -2,23 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, Building2, DollarSign, Users } from "lucide-react";
-
-interface Grant {
-  id: string;
-  計畫名稱: string;
-  補助類別: string;
-  子分類: string;
-  補助重點: string;
-  補助對象: string[];
-  補助金額: string;
-  補助比例上限: string;
-  計畫時程: string;
-  主辦單位: string;
-  參考資料: string[];
-  企業規模: string[];
-  金額分類: string;
-  主辦機關分類: string;
-}
+import { Grant } from "@/types/grant";
 
 interface GrantCardProps {
   grant: Grant;
@@ -52,11 +36,7 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
   return (
     <Card 
       className="group cursor-pointer transition-all duration-normal hover:shadow-lg hover:-translate-y-1 bg-gradient-card border-border/50"
-      onClick={(e) => {
-        console.log('Card clicked, event target:', e.target);
-        console.log('Card onClick called');
-        onClick();
-      }}
+      onClick={onClick}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
@@ -120,9 +100,7 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
           size="sm" 
           className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-fast"
           onClick={(e) => {
-            console.log('Button clicked, stopping propagation');
             e.stopPropagation();
-            e.preventDefault();
             onClick();
           }}
         >

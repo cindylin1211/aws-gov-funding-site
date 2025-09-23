@@ -9,15 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, Search as SearchIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Grant } from "@/types/grant";
 
 const Index = () => {
   const { grantsData, filteredGrants, filters, loading, error, updateFilter, sortGrants } = useGrantsData();
-  const [selectedGrant, setSelectedGrant] = useState(null);
+  const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState('default');
 
-  const handleGrantClick = (grant: any) => {
-    console.log('handleGrantClick called with grant:', grant);
+  const handleGrantClick = (grant: Grant) => {
     setSelectedGrant(grant);
     setIsModalOpen(true);
   };
