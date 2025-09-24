@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Grant } from "@/types/grant";
 
 const Index = () => {
-  const { grantsData, filteredGrants, filters, loading, error, updateFilter, sortGrants } = useGrantsData();
+  const { grantsData, filteredGrants, filters, loading, error, updateFilter, clearAllFilters, sortGrants } = useGrantsData();
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState('default');
@@ -77,7 +77,7 @@ const Index = () => {
       <header className="bg-gradient-hero text-white py-16 px-4">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">
-            政府補助計畫搜尋器
+            AWS 政府補助計畫搜尋器
           </h1>
           <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto">
             快速找到適合您企業的政府補助計畫，加速業務發展與創新轉型
@@ -89,6 +89,7 @@ const Index = () => {
               value={filters.search}
               onChange={(value) => updateFilter('search', value)}
               placeholder="搜尋補助計畫名稱、關鍵字或主辦機關..."
+              onClear={clearAllFilters}
             />
           </div>
         </div>
@@ -106,6 +107,7 @@ const Index = () => {
                 categoriesData={grantsData.categories}
                 filtersData={grantsData.filters}
                 totalGrantsCount={grantsData.grants?.length || 0}
+                allGrants={grantsData.grants || []}
               />
             )}
           </aside>

@@ -15,9 +15,10 @@ interface FilterSectionProps {
   categoriesData: any;
   filtersData: any;
   totalGrantsCount: number;
+  allGrants: any[];
 }
 
-const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, totalGrantsCount }: FilterSectionProps) => {
+const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, totalGrantsCount, allGrants }: FilterSectionProps) => {
   const handleMainCategoryChange = (category: string) => {
     onFilterChange('mainCategory', category);
     if (category !== filters.mainCategory) {
@@ -29,6 +30,10 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
     if (filters.mainCategory === 'all') return [];
     const mainCat = categoriesData.main.find((cat: any) => cat.name === filters.mainCategory);
     return mainCat?.subcategories || [];
+  };
+
+  const getCategoryCount = (categoryName: string) => {
+    return allGrants.filter(grant => grant.補助類別 === categoryName).length;
   };
 
   return (
@@ -61,7 +66,7 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
                 onClick={() => handleMainCategoryChange(category.name)}
                 className="h-9"
               >
-                {category.name} ({category.count})
+                {category.name} ({getCategoryCount(category.name)})
               </Button>
             ))}
           </div>

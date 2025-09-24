@@ -147,6 +147,18 @@ export const useGrantsData = () => {
     }));
   };
 
+  // Clear all filters
+  const clearAllFilters = () => {
+    setFilters({
+      search: '',
+      mainCategory: 'all',
+      subCategory: '',
+      companySize: '',
+      grantAmount: '',
+      agency: ''
+    });
+  };
+
   // Sort grants
   const sortGrants = (grants: Grant[], sortBy: string): Grant[] => {
     switch (sortBy) {
@@ -177,6 +189,7 @@ export const useGrantsData = () => {
     loading,
     error,
     updateFilter,
+    clearAllFilters,
     sortGrants
   };
 };
