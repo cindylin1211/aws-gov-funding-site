@@ -35,7 +35,7 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
 
   return (
     <Card 
-      className="group cursor-pointer transition-all duration-normal hover:shadow-lg hover:-translate-y-1 bg-gradient-card border-border/50"
+      className="group cursor-pointer transition-all duration-normal hover:shadow-lg hover:-translate-y-1 bg-gradient-card border-border/50 flex flex-col h-full"
       onClick={onClick}
     >
       <CardHeader className="pb-3">
@@ -54,27 +54,54 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
         )}
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-grow">
         <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
           {grant.補助重點}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-success shrink-0" />
-            <span className="text-muted-foreground">補助金額:</span>
-            <span className={getAmountColor(grant.補助金額)}>
-              {grant.補助金額}
-            </span>
+        {/* 企業規模標籤 */}
+        {grant.企業規模 && grant.企業規模.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {grant.企業規模.map((size, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {size}
+              </Badge>
+            ))}
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary shrink-0" />
-            <span className="text-muted-foreground">補助比例:</span>
-            <span className="text-foreground font-medium">
-              {grant.補助比例上限}
-            </span>
+        )}
+
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-success shrink-0" />
+              <span className="text-muted-foreground">補助金額:</span>
+              <span className={getAmountColor(grant.補助金額)}>
+                {grant.補助金額}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary shrink-0" />
+              <span className="text-muted-foreground">補助比例:</span>
+              <span className="text-foreground font-medium">
+                {grant.補助比例上限}
+              </span>
+            </div>
           </div>
+
+          {/* 金額分類標籤 */}
+          {grant.金額分類 && (
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-xs">
+                {grant.金額分類}
+              </Badge>
+              {grant.主辦機關分類 && (
+                <Badge variant="outline" className="text-xs">
+                  {grant.主辦機關分類}
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="space-y-2 text-sm">
@@ -94,7 +121,7 @@ const GrantCard = ({ grant, onClick }: GrantCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-4">
+      <CardFooter className="pt-4 mt-auto">
         <Button 
           variant="outline" 
           size="sm" 

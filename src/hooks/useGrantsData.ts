@@ -66,15 +66,106 @@ export const useGrantsData = () => {
     const loadGrantsData = async () => {
       try {
         console.log('開始載入補助資料...');
-        const response = await fetch('/grants-database.json');
-        console.log('Response status:', response.status);
-        if (!response.ok) {
-          throw new Error('無法載入補助資料');
+        
+        // 動態導入 Supabase（避免在不需要時載入）
+        const { supabase } = await import('@/integrations/supabase/client');
+        
+        // 先嘗試從 Supabase 載入
+        const { data: supabaseData, error: supabaseError } = await supabase
+          .from('grants')
+          .select('*')
+          .order('created_at', { ascending: true }) as any;
+
+        let grants: Grant[] = [];
+
+        if (!supabaseError && supabaseData && supabaseData.length > 0) {
+          console.log('從 Supabase 載入資料');
+          grants = supabaseData.flatMap((row: any) => row.data as Grant[]);
+        } else {
+          // 如果 Supabase 沒有資料，從 JSON 檔案載入
+          console.log('從 JSON 檔案載入資料');
+          const response = await fetch('/grants-database.json');
+          if (!response.ok) {
+            throw new Error('無法載入補助資料');
+          }
+          const jsonData = await response.json();
+          grants = jsonData.grants;
         }
-        const data = await response.json();
-        console.log('載入的資料:', data);
-        console.log('補助數量:', data.grants?.length);
+
+        // 重新計算分類統計
+        const categoryCounts = grants.reduce((acc: any, grant: Grant) => {
+          const category = grant.補助類別;
+          if (!acc[category]) {
+            acc[category] = { count: 0, subcategories: {} };
+          }
+          acc[category].count++;
+          
+          const subCategory = grant.子分類;
+          if (!acc[category].subcategories[subCategory]) {
+            acc[category].subcategories[subCategory] = 0;
+          }
+          acc[category].subcategories[subCategory]++;
+          
+          return acc;
+        }, {});
+
+        // 重建完整資料結構
+        const data = {
+          grants,
+          categories: {
+            main: Object.entries(categoryCounts).map(([name, info]: [string, any]) => ({
+              id: name.toLowerCase().replace(/\s+/g, '-'),
+              name,
+              count: info.count,
+              subcategories: Object.entries(info.subcategories).map(([subName, count]) => ({
+                id: subName.toLowerCase().replace(/\s+/g, '-'),
+                name: subName,
+                count
+              }))
+            }))
+          },
+          filters: {
+            companySize: [...new Set(grants.flatMap((g: Grant) => g.企業規模))].map(size => ({
+              id: size.toLowerCase().replace(/\s+/g, '-'),
+              name: size,
+              value: size
+            })),
+            grantAmount: [...new Set(grants.map((g: Grant) => g.金額分類))].map(amount => ({
+              id: amount.toLowerCase().replace(/\s+/g, '-'),
+              name: amount,
+              value: amount
+            })),
+            agency: [...new Set(grants.map((g: Grant) => g.主辦機關分類))].map(agency => ({
+              id: agency.toLowerCase().replace(/\s+/g, '-'),
+              name: agency,
+              value: agency
+            }))
+          }
+        };
+
+        console.log('補助數量:', grants.length);
         setGrantsData(data);
+
+        // 訂閱即時更新
+        const channel = supabase
+          .channel('grants-changes')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'grants'
+            },
+            () => {
+              console.log('資料已更新，重新載入...');
+              loadGrantsData();
+            }
+          )
+          .subscribe();
+
+        return () => {
+          supabase.removeChannel(channel);
+        };
       } catch (err) {
         console.error('載入資料錯誤:', err);
         setError(err instanceof Error ? err.message : '載入資料時發生錯誤');

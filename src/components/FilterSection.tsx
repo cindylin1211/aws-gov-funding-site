@@ -20,9 +20,15 @@ interface FilterSectionProps {
 
 const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, totalGrantsCount, allGrants }: FilterSectionProps) => {
   const handleMainCategoryChange = (category: string) => {
-    onFilterChange('mainCategory', category);
-    if (category !== filters.mainCategory) {
-      onFilterChange('subCategory', ''); // Reset subcategory when main category changes
+    // 如果點擊已選中的類別，則取消選擇（回到 'all'）
+    if (filters.mainCategory === category && category !== 'all') {
+      onFilterChange('mainCategory', 'all');
+      onFilterChange('subCategory', '');
+    } else {
+      onFilterChange('mainCategory', category);
+      if (category !== filters.mainCategory) {
+        onFilterChange('subCategory', ''); // Reset subcategory when main category changes
+      }
     }
   };
 
@@ -58,17 +64,37 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
             >
               全部 ({totalGrantsCount})
             </Button>
-            {categoriesData.main.map((category: any) => (
-              <Button
-                key={category.id}
-                variant={filters.mainCategory === category.name ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleMainCategoryChange(category.name)}
-                className="h-9"
-              >
-                {category.name} ({getCategoryCount(category.name)})
-              </Button>
-            ))}
+            {categoriesData.main.map((category: any) => {
+              const isSelected = filters.mainCategory === category.name;
+              let colorClass = '';
+              
+              // 根據類別設定不同顏色
+              if (category.name === '數位轉型') {
+                colorClass = isSelected 
+                  ? 'bg-blue-500 hover:bg-blue-600 text-white border-blue-500' 
+                  : 'border-blue-300 text-blue-600 hover:bg-blue-50';
+              } else if (category.name === '創新研發') {
+                colorClass = isSelected 
+                  ? 'bg-purple-500 hover:bg-purple-600 text-white border-purple-500' 
+                  : 'border-purple-300 text-purple-600 hover:bg-purple-50';
+              } else if (category.name === '人才培訓') {
+                colorClass = isSelected 
+                  ? 'bg-green-500 hover:bg-green-600 text-white border-green-500' 
+                  : 'border-green-300 text-green-600 hover:bg-green-50';
+              }
+              
+              return (
+                <Button
+                  key={category.id}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleMainCategoryChange(category.name)}
+                  className={`h-9 ${colorClass}`}
+                >
+                  {category.name} ({getCategoryCount(category.name)})
+                </Button>
+              );
+            })}
           </div>
         </div>
 
@@ -100,56 +126,90 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
 
         {/* Other Filters */}
         <div className="space-y-4">
-          {/* Company Size */}
+          {/* Company Size - 藍色 */}
           <div className="space-y-3">
             <h4 className="font-medium text-foreground">企業規模</h4>
             <div className="flex flex-wrap gap-2">
-              {filtersData.companySize.map((option: any) => (
-                <Badge
-                  key={option.id}
-                  variant={filters.companySize === option.value ? "default" : "secondary"}
-                  className="cursor-pointer transition-all duration-fast hover:scale-105"
-                  onClick={() => onFilterChange('companySize', option.value)}
-                >
-                  {option.name}
-                </Badge>
-              ))}
+              {filtersData.companySize.map((option: any) => {
+                const isSelected = filters.companySize === option.value;
+                return (
+                  <Badge
+                    key={option.id}
+                    variant="outline"
+                    className={`cursor-pointer transition-all duration-fast hover:scale-105 ${
+                      isSelected 
+                        ? 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600' 
+                        : 'border-blue-300 text-blue-600 hover:bg-blue-50'
+                    }`}
+                    onClick={() => onFilterChange('companySize', isSelected ? '' : option.value)}
+                  >
+                    {option.name}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
 
-          {/* Grant Amount */}
+          {/* Grant Amount - 綠色 */}
           <div className="space-y-3">
             <h4 className="font-medium text-foreground">補助金額</h4>
             <div className="flex flex-wrap gap-2">
-              {filtersData.grantAmount.map((option: any) => (
-                <Badge
-                  key={option.id}
-                  variant={filters.grantAmount === option.value ? "default" : "secondary"}
-                  className="cursor-pointer transition-all duration-fast hover:scale-105"
-                  onClick={() => onFilterChange('grantAmount', option.value)}
-                >
-                  {option.name}
-                </Badge>
-              ))}
+              {filtersData.grantAmount.map((option: any) => {
+                const isSelected = filters.grantAmount === option.value;
+                return (
+                  <Badge
+                    key={option.id}
+                    variant="outline"
+                    className={`cursor-pointer transition-all duration-fast hover:scale-105 ${
+                      isSelected 
+                        ? 'bg-green-500 text-white border-green-500 hover:bg-green-600' 
+                        : 'border-green-300 text-green-600 hover:bg-green-50'
+                    }`}
+                    onClick={() => onFilterChange('grantAmount', isSelected ? '' : option.value)}
+                  >
+                    {option.name}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
 
-          {/* Agency */}
+          {/* Agency - 橙色 */}
           <div className="space-y-3">
             <h4 className="font-medium text-foreground">主辦機關</h4>
             <div className="flex flex-wrap gap-2">
-              {filtersData.agency.map((option: any) => (
-                <Badge
-                  key={option.id}
-                  variant={filters.agency === option.value ? "default" : "secondary"}
-                  className="cursor-pointer transition-all duration-fast hover:scale-105"
-                  onClick={() => onFilterChange('agency', option.value)}
-                >
-                  {option.name}
-                </Badge>
-              ))}
+              {filtersData.agency.map((option: any) => {
+                const isSelected = filters.agency === option.value;
+                return (
+                  <Badge
+                    key={option.id}
+                    variant="outline"
+                    className={`cursor-pointer transition-all duration-fast hover:scale-105 ${
+                      isSelected 
+                        ? 'bg-orange-500 text-white border-orange-500 hover:bg-orange-600' 
+                        : 'border-orange-300 text-orange-600 hover:bg-orange-50'
+                    }`}
+                    onClick={() => onFilterChange('agency', isSelected ? '' : option.value)}
+                  >
+                    {option.name}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
+        </div>
+
+        <Separator />
+
+        {/* 懶人包按鈕 */}
+        <div className="pt-2">
+          <Button
+            variant="default"
+            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg"
+            onClick={() => window.open('https://dlru6eczsza6t.cloudfront.net/2025GovFundeBook.pdf', '_blank')}
+          >
+            📚 點我看懶人包
+          </Button>
         </div>
       </CardContent>
     </Card>
