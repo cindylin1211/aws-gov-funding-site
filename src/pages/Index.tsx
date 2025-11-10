@@ -183,7 +183,7 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="flex flex-col items-center justify-center gap-3 text-center">
             <p className="text-sm opacity-90">
-              聯絡信箱：<a href="mailto:aws-tw-dgr@amazon.com" className="text-white hover:text-white/80 hover:underline font-medium transition-colors duration-fast">aws-tw-dgr@amazon.com</a>
+              聯絡信箱：<a href="mailto:cindyjw@amazon.com" className="text-white hover:text-white/80 hover:underline font-medium transition-colors duration-fast">cindyjw@amazon.com</a>
             </p>
             <p className="text-sm opacity-90">
               © 2025 AWS 政府補助網站 - 內部工具
