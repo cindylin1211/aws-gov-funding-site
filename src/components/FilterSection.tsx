@@ -7,11 +7,11 @@ interface FilterSectionProps {
   filters: {
     mainCategory: string;
     subCategory: string;
-    companySize: string;
-    grantAmount: string;
-    agency: string;
+    companySize: string[];  // 改為陣列以支援多重選取
+    grantAmount: string[];  // 改為陣列以支援多重選取
+    agency: string[];       // 改為陣列以支援多重選取
   };
-  onFilterChange: (filterType: string, value: string) => void;
+  onFilterChange: (filterType: string, value: string | string[]) => void;  // 支援陣列值
   categoriesData: any;
   filtersData: any;
   totalGrantsCount: number;
@@ -131,7 +131,7 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
             <h4 className="font-medium text-foreground">企業規模</h4>
             <div className="flex flex-wrap gap-2">
               {filtersData.companySize.map((option: any) => {
-                const isSelected = filters.companySize === option.value;
+                const isSelected = filters.companySize.includes(option.value);
                 return (
                   <Badge
                     key={option.id}
@@ -141,7 +141,13 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
                         ? 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600' 
                         : 'border-blue-300 text-blue-600 hover:bg-blue-50'
                     }`}
-                    onClick={() => onFilterChange('companySize', isSelected ? '' : option.value)}
+                    onClick={() => {
+                      // 切換選取狀態
+                      const newSelection = isSelected
+                        ? filters.companySize.filter(size => size !== option.value)  // 取消選取
+                        : [...filters.companySize, option.value];  // 加入選取
+                      onFilterChange('companySize', newSelection);
+                    }}
                   >
                     {option.name}
                   </Badge>
@@ -155,7 +161,7 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
             <h4 className="font-medium text-foreground">補助金額</h4>
             <div className="flex flex-wrap gap-2">
               {filtersData.grantAmount.map((option: any) => {
-                const isSelected = filters.grantAmount === option.value;
+                const isSelected = filters.grantAmount.includes(option.value);
                 return (
                   <Badge
                     key={option.id}
@@ -165,7 +171,13 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
                         ? 'bg-green-500 text-white border-green-500 hover:bg-green-600' 
                         : 'border-green-300 text-green-600 hover:bg-green-50'
                     }`}
-                    onClick={() => onFilterChange('grantAmount', isSelected ? '' : option.value)}
+                    onClick={() => {
+                      // 切換選取狀態
+                      const newSelection = isSelected
+                        ? filters.grantAmount.filter(amount => amount !== option.value)  // 取消選取
+                        : [...filters.grantAmount, option.value];  // 加入選取
+                      onFilterChange('grantAmount', newSelection);
+                    }}
                   >
                     {option.name}
                   </Badge>
@@ -179,7 +191,7 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
             <h4 className="font-medium text-foreground">主辦機關</h4>
             <div className="flex flex-wrap gap-2">
               {filtersData.agency.map((option: any) => {
-                const isSelected = filters.agency === option.value;
+                const isSelected = filters.agency.includes(option.value);
                 return (
                   <Badge
                     key={option.id}
@@ -189,7 +201,13 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
                         ? 'bg-orange-500 text-white border-orange-500 hover:bg-orange-600' 
                         : 'border-orange-300 text-orange-600 hover:bg-orange-50'
                     }`}
-                    onClick={() => onFilterChange('agency', isSelected ? '' : option.value)}
+                    onClick={() => {
+                      // 切換選取狀態
+                      const newSelection = isSelected
+                        ? filters.agency.filter(agency => agency !== option.value)  // 取消選取
+                        : [...filters.agency, option.value];  // 加入選取
+                      onFilterChange('agency', newSelection);
+                    }}
                   >
                     {option.name}
                   </Badge>

@@ -294,7 +294,7 @@ interface ImportDialogProps {
 - Search: 在計畫名稱、補助重點、主辦單位中搜尋
 - Main Category: 精確匹配補助類別
 - Sub Category: 精確匹配子分類
-- Company Size: 檢查企業規模陣列是否包含選定值
+- Company Size: 支援多重選取，檢查補助計畫的企業規模陣列是否與任一選取的企業規模有交集
 - Grant Amount: 精確匹配金額分類
 - Agency: 精確匹配主辦機關分類
 
@@ -396,7 +396,7 @@ interface Filters {
   search: string;           // 搜尋關鍵字
   mainCategory: string;     // 主分類
   subCategory: string;      // 子分類
-  companySize: string;      // 企業規模
+  companySize: string[];    // 企業規模（支援多選）
   grantAmount: string;      // 金額範圍
   agency: string;           // 主辦機關
 }

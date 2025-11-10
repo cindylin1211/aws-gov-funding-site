@@ -40,6 +40,11 @@
 3. THE System SHALL 允許 User 同時套用多個篩選條件
 4. THE System SHALL 提供清除所有篩選條件的功能
 5. WHEN User 選擇主分類，THE System SHALL 更新子分類選項以對應該主分類
+6. WHEN User 點擊企業規模篩選按鈕，THE System SHALL 切換該選項的選取狀態
+7. WHEN User 再次點擊已選取的企業規模按鈕，THE System SHALL 取消該選項的選取
+8. THE System SHALL 允許 User 同時選取多個企業規模選項
+9. THE System SHALL 顯示符合任一選取的企業規模條件的補助計畫
+10. THE System SHALL 在企業規模按鈕上以視覺方式區分選取和未選取狀態
 
 ### Requirement 3
 

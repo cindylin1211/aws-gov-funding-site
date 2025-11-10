@@ -178,6 +178,20 @@ const Index = () => {
         onClose={handleCloseModal}
       />
 
+      {/* Footer */}
+      <footer className="bg-gradient-hero text-white py-8 px-4 mt-16">
+        <div className="container mx-auto">
+          <div className="flex flex-col items-center justify-center gap-3 text-center">
+            <p className="text-sm opacity-90">
+              聯絡信箱：<a href="mailto:aws-tw-dgr@amazon.com" className="text-white hover:text-white/80 hover:underline font-medium transition-colors duration-fast">aws-tw-dgr@amazon.com</a>
+            </p>
+            <p className="text-sm opacity-90">
+              © 2025 AWS 政府補助網站 - 內部工具
+            </p>
+          </div>
+        </div>
+      </footer>
+
       {/* Chat Assistant */}
       <ChatAssistant />
     </div>

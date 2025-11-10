@@ -11,9 +11,9 @@ interface Filters {
   search: string;
   mainCategory: string;
   subCategory: string;
-  companySize: string;
-  grantAmount: string;
-  agency: string;
+  companySize: string[];  // 改為陣列以支援多重選取
+  grantAmount: string[];  // 改為陣列以支援多重選取
+  agency: string[];       // 改為陣列以支援多重選取
 }
 
 // Helper function to match company size
@@ -56,9 +56,9 @@ export const useGrantsData = () => {
     search: '',
     mainCategory: 'all',
     subCategory: '',
-    companySize: '',
-    grantAmount: '',
-    agency: ''
+    companySize: [],    // 初始化為空陣列
+    grantAmount: [],    // 初始化為空陣列
+    agency: []          // 初始化為空陣列
   });
 
   // Load grants data
@@ -205,23 +205,27 @@ export const useGrantsData = () => {
         }
       }
 
-      // Company size filter
-      if (filters.companySize) {
-        if (!grant.企業規模 || !grant.企業規模.includes(filters.companySize)) {
+      // Company size filter - 支援多重選取（OR 邏輯）
+      if (filters.companySize.length > 0) {
+        // 檢查補助計畫的企業規模陣列是否與任一選取的企業規模有交集
+        const hasMatch = filters.companySize.some(selectedSize => 
+          grant.企業規模 && grant.企業規模.includes(selectedSize)
+        );
+        if (!hasMatch) {
           return false;
         }
       }
 
-      // Grant amount filter
-      if (filters.grantAmount) {
-        if (grant.金額分類 !== filters.grantAmount) {
+      // Grant amount filter - 支援多重選取（OR 邏輯）
+      if (filters.grantAmount.length > 0) {
+        if (!filters.grantAmount.includes(grant.金額分類)) {
           return false;
         }
       }
 
-      // Agency filter
-      if (filters.agency) {
-        if (grant.主辦機關分類 !== filters.agency) {
+      // Agency filter - 支援多重選取（OR 邏輯）
+      if (filters.agency.length > 0) {
+        if (!filters.agency.includes(grant.主辦機關分類)) {
           return false;
         }
       }
@@ -244,9 +248,9 @@ export const useGrantsData = () => {
       search: '',
       mainCategory: 'all',
       subCategory: '',
-      companySize: '',
-      grantAmount: '',
-      agency: ''
+      companySize: [],    // 清除為空陣列
+      grantAmount: [],    // 清除為空陣列
+      agency: []          // 清除為空陣列
     });
   };
 
