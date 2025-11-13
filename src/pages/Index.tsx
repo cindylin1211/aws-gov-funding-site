@@ -179,15 +179,64 @@ const Index = () => {
       />
 
       {/* Footer */}
-      <footer className="bg-gradient-hero text-white py-8 px-4 mt-16">
-        <div className="container mx-auto">
-          <div className="flex flex-col items-center justify-center gap-3 text-center">
-            <p className="text-sm opacity-90">
-              聯絡信箱：<a href="mailto:cindyjw@amazon.com" className="text-white hover:text-white/80 hover:underline font-medium transition-colors duration-fast">cindyjw@amazon.com</a>
-            </p>
-            <p className="text-sm opacity-90">
-              © 2025 AWS 政府補助網站 - 內部工具
-            </p>
+      <footer className="bg-gradient-hero text-white py-10 px-4 mt-16">
+        <div className="container mx-auto max-w-4xl">
+          <div className="flex flex-col items-center justify-center gap-6 text-center">
+            {/* Contact Section */}
+            <div className="space-y-4 w-full">
+              <h3 className="text-lg font-semibold mb-4">聯絡方式</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div className="opacity-90">
+                    <span className="font-medium">TW DGR:</span>{" "}
+                    <a href="mailto:aws-tw-dgr@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
+                      aws-tw-dgr@amazon.com
+                    </a>
+                  </div>
+                  <div className="opacity-90">
+                    <span className="font-medium">PM Maggie:</span>{" "}
+                    <a href="mailto:maggieyj@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
+                      maggieyj@amazon.com
+                    </a>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="opacity-90">
+                    <span className="font-medium">Cindy:</span>{" "}
+                    <a href="mailto:cindyjw@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
+                      cindyjw@amazon.com
+                    </a>
+                  </div>
+                  <div className="opacity-90">
+                    <span className="font-medium">Slack:</span>{" "}
+                    <a 
+                      href="https://amazon.enterprise.slack.com/team/U06451XD9HR" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-white/80 hover:underline transition-colors duration-fast"
+                    >
+                      @Maggie Chang
+                    </a>
+                    {" | "}
+                    <a 
+                      href="https://amazon.enterprise.slack.com/team/U0960E9NWBA" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-white/80 hover:underline transition-colors duration-fast"
+                    >
+                      @Cindy Lin
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Copyright */}
+            <div className="border-t border-white/20 pt-4 w-full">
+              <p className="text-sm opacity-90">
+                © 2025 AWS 政府補助網站 - 內部工具
+              </p>
+            </div>
           </div>
         </div>
       </footer>
