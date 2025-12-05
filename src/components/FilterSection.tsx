@@ -224,7 +224,7 @@ const FilterSection = ({ filters, onFilterChange, categoriesData, filtersData, t
           <Button
             variant="default"
             className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg"
-            onClick={() => window.open('https://dlru6eczsza6t.cloudfront.net/2025GovFundeBook.pdf', '_blank')}
+            onClick={() => window.open('https://d5vc2tehf6g33.cloudfront.net/2025GovFundeBook.pdf', '_blank')}
           >
             📚 點我看懶人包
           </Button>
