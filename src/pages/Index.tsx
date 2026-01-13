@@ -81,7 +81,7 @@ const Index = () => {
             AWS 政府補助計畫搜尋器
           </h1>
           <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            快速找到適合您企業的政府補助計畫，加速業務發展與創新轉型
+            快速找到適合您客戶的政府補助計畫，加速業務發展與創新轉型
           </p>
           
           {/* Search Bar */}
@@ -185,48 +185,36 @@ const Index = () => {
             {/* Contact Section */}
             <div className="space-y-4 w-full">
               <h3 className="text-lg font-semibold mb-4">聯絡方式</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="space-y-2">
-                  <div className="opacity-90">
-                    <span className="font-medium">TW DGR:</span>{" "}
-                    <a href="mailto:aws-tw-dgr@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
-                      aws-tw-dgr@amazon.com
-                    </a>
-                  </div>
-                  <div className="opacity-90">
-                    <span className="font-medium">PM Maggie:</span>{" "}
-                    <a href="mailto:maggieyj@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
-                      maggieyj@amazon.com
-                    </a>
-                  </div>
+              <div className="space-y-3 text-sm">
+                <div className="opacity-90">
+                  <span className="font-medium">補助相關問題 - PM Maggie:</span>{" "}
+                  <a href="mailto:maggieyj@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
+                    maggieyj@amazon.com
+                  </a>
+                  {" | "}
+                  <a 
+                    href="https://amazon.enterprise.slack.com/team/U06451XD9HR" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white/80 hover:underline transition-colors duration-fast"
+                  >
+                    @Maggie Chang
+                  </a>
                 </div>
-                <div className="space-y-2">
-                  <div className="opacity-90">
-                    <span className="font-medium">Cindy:</span>{" "}
-                    <a href="mailto:cindyjw@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
-                      cindyjw@amazon.com
-                    </a>
-                  </div>
-                  <div className="opacity-90">
-                    <span className="font-medium">Slack:</span>{" "}
-                    <a 
-                      href="https://amazon.enterprise.slack.com/team/U06451XD9HR" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="hover:text-white/80 hover:underline transition-colors duration-fast"
-                    >
-                      @Maggie Chang
-                    </a>
-                    {" | "}
-                    <a 
-                      href="https://amazon.enterprise.slack.com/team/U0960E9NWBA" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="hover:text-white/80 hover:underline transition-colors duration-fast"
-                    >
-                      @Cindy Lin
-                    </a>
-                  </div>
+                <div className="opacity-90">
+                  <span className="font-medium">網站技術相關 - Cindy:</span>{" "}
+                  <a href="mailto:cindyjw@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
+                    cindyjw@amazon.com
+                  </a>
+                  {" | "}
+                  <a 
+                    href="https://amazon.enterprise.slack.com/team/U0960E9NWBA" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white/80 hover:underline transition-colors duration-fast"
+                  >
+                    @Cindy Lin
+                  </a>
                 </div>
               </div>
             </div>
@@ -234,7 +222,7 @@ const Index = () => {
             {/* Copyright */}
             <div className="border-t border-white/20 pt-4 w-full">
               <p className="text-sm opacity-90">
-                © 2025 AWS 政府補助網站 - 內部工具
+                © 2026 AWS 政府補助網站 - 內部工具
               </p>
             </div>
           </div>
