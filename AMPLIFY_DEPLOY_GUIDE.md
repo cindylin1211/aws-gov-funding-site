@@ -21,8 +21,8 @@ async function initDB() {
   const data = await response.json();
   const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
   const supabase = createClient(
-    'https://uijhsmfimsscmfycsrhr.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpamhzbWZpbXNzY21meWNzcmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDU3OTAsImV4cCI6MjA3NDEyMTc5MH0.RRkluAiZtnJU_AquD6rQnQeslaNC2MlzXPYdWcJwSRs'
+    'https://yttfrncgkgiodnartgbf.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0dGZybmNna2dpb2RuYXJ0Z2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzNzI1MTIsImV4cCI6MjA4Mzk0ODUxMn0.jpIl9r6ZAqWSvPpuIxb6_IJTFiRWVdIedHc1pTg_Tew'
   );
   const result = await supabase.from('grants').upsert({
     id: 'grants-data',
