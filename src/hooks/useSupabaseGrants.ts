@@ -13,11 +13,6 @@ export const useSupabaseGrants = () => {
     try {
       setLoading(true);
       
-      // 先從 JSON 檔案載入（確保一定有資料）
-      const response = await fetch('/grants-database.json');
-      const jsonData = await response.json();
-      setGrants(jsonData.grants);
-      
       // 嘗試從 Supabase 載入
       try {
         const { data, error } = await supabase
@@ -26,16 +21,31 @@ export const useSupabaseGrants = () => {
           .order('created_at', { ascending: true }) as any;
 
         if (!error && data && data.length > 0) {
-          // 如果 Supabase 有資料，使用 Supabase 的資料
+          // 如果 Supabase 有資料，優先使用 Supabase 的資料
           const grantsData = data.flatMap((row: any) => row.data as Grant[]);
+          console.log('從 Supabase 載入資料，共', grantsData.length, '個計畫');
           setGrants(grantsData);
         } else if (!error && (!data || data.length === 0)) {
-          // 如果 Supabase 是空的，將 JSON 資料同步到 Supabase
+          // 只有在 Supabase 完全是空的時候，才從 JSON 初始化
+          console.log('Supabase 是空的，從 JSON 初始化');
+          const response = await fetch('/grants-database.json');
+          const jsonData = await response.json();
+          setGrants(jsonData.grants);
+          // 將 JSON 資料同步到 Supabase（只執行一次）
           await saveToSupabase(jsonData.grants, false);
+        } else {
+          throw error;
         }
       } catch (supabaseError) {
-        console.warn('Supabase 連接失敗，使用本地 JSON 資料:', supabaseError);
-        // 繼續使用 JSON 資料，不顯示錯誤訊息
+        console.error('Supabase 連接失敗:', supabaseError);
+        // 如果 Supabase 失敗，才使用 JSON 備用
+        const response = await fetch('/grants-database.json');
+        const jsonData = await response.json();
+        setGrants(jsonData.grants);
+        toast({
+          title: "使用本地資料",
+          description: "無法連接雲端資料庫，使用本地備份資料",
+        });
       }
     } catch (error) {
       console.error('載入資料錯誤:', error);
@@ -52,18 +62,25 @@ export const useSupabaseGrants = () => {
   // 儲存到 Supabase
   const saveToSupabase = async (grantsData: Grant[], showToast = true) => {
     try {
-      // 先刪除舊資料
-      await (supabase.from('grants') as any).delete().neq('id', '');
-
-      // 插入新資料
+      console.log('開始儲存到 Supabase，共', grantsData.length, '個計畫');
+      
+      // 使用 upsert 來更新或插入資料
       const { error } = await (supabase
         .from('grants') as any)
-        .insert({
+        .upsert({
           id: 'grants-data',
-          data: grantsData
+          data: grantsData,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase 儲存錯誤:', error);
+        throw error;
+      }
+
+      console.log('成功儲存到 Supabase');
 
       if (showToast) {
         toast({
@@ -80,6 +97,7 @@ export const useSupabaseGrants = () => {
           variant: "destructive",
         });
       }
+      throw error; // 重新拋出錯誤以便上層處理
     }
   };
 
