@@ -145,27 +145,6 @@ export const useGrantsData = () => {
 
         console.log('補助數量:', grants.length);
         setGrantsData(data);
-
-        // 訂閱即時更新
-        const channel = supabase
-          .channel('grants-changes')
-          .on(
-            'postgres_changes',
-            {
-              event: '*',
-              schema: 'public',
-              table: 'grants'
-            },
-            () => {
-              console.log('資料已更新，重新載入...');
-              loadGrantsData();
-            }
-          )
-          .subscribe();
-
-        return () => {
-          supabase.removeChannel(channel);
-        };
       } catch (err) {
         console.error('載入資料錯誤:', err);
         setError(err instanceof Error ? err.message : '載入資料時發生錯誤');
@@ -175,6 +154,15 @@ export const useGrantsData = () => {
     };
 
     loadGrantsData();
+
+    // 設定定期輪詢（每 5 秒檢查一次更新）
+    const pollInterval = setInterval(() => {
+      loadGrantsData();
+    }, 5000);
+
+    return () => {
+      clearInterval(pollInterval);
+    };
   }, []);
 
   // Filter grants based on current filters
