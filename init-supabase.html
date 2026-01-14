@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初始化 Supabase 資料</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #log {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .info {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 初始化 Supabase 資料庫</h1>
+        <p>點擊下方按鈕將 31 個補助計畫寫入 Supabase 資料庫</p>
+        
+        <button id="initBtn" onclick="initializeSupabase()">開始初始化</button>
+        
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://uijhsmfimsscmfycsrhr.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpamhzbWZpbXNzY21meWNzcmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDU3OTAsImV4cCI6MjA3NDEyMTc5MH0.RRkluAiZtnJU_AquD6rQnQeslaNC2MlzXPYdWcJwSRs";
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div class="${type}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function initializeSupabase() {
+            const btn = document.getElementById('initBtn');
+            btn.disabled = true;
+            btn.textContent = '初始化中...';
+            
+            document.getElementById('log').innerHTML = '';
+            
+            try {
+                log('🚀 開始初始化 Supabase...', 'info');
+                
+                // 載入 grants 資料
+                log('📥 載入補助計畫資料...', 'info');
+                const response = await fetch('/grants-database.json');
+                const data = await response.json();
+                const grants = data.grants;
+                
+                log(`✅ 成功載入 ${grants.length} 個補助計畫`, 'success');
+                
+                // 清除現有資料
+                log('🗑️ 清除現有資料...', 'info');
+                const { error: deleteError } = await supabase
+                    .from('grants')
+                    .delete()
+                    .neq('id', 'impossible-match');
+                
+                if (deleteError && deleteError.code !== 'PGRST116') {
+                    log(`⚠️ 清除資料警告: ${deleteError.message}`, 'error');
+                }
+                
+                // 插入新資料
+                log('💾 寫入資料到 Supabase...', 'info');
+                const { data: insertData, error: insertError } = await supabase
+                    .from('grants')
+                    .upsert({
+                        id: 'grants-data',
+                        data: grants,
+                        updated_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'id'
+                    })
+                    .select();
+                
+                if (insertError) {
+                    throw insertError;
+                }
+                
+                log('✅ 成功寫入資料！', 'success');
+                
+                // 驗證資料
+                log('🔍 驗證資料...', 'info');
+                const { data: verifyData, error: verifyError } = await supabase
+                    .from('grants')
+                    .select('*');
+                
+                if (verifyError) {
+                    throw verifyError;
+                }
+                
+                if (verifyData && verifyData.length > 0) {
+                    const totalGrants = verifyData.flatMap(row => row.data).length;
+                    log(`✅ 驗證成功！資料庫中共有 ${totalGrants} 個補助計畫`, 'success');
+                    log('🎉 初始化完成！', 'success');
+                } else {
+                    log('⚠️ 警告：資料庫中沒有資料', 'error');
+                }
+                
+                btn.textContent = '初始化成功！';
+                btn.style.background = '#4CAF50';
+                
+            } catch (error) {
+                log(`❌ 初始化失敗: ${error.message}`, 'error');
+                console.error('詳細錯誤:', error);
+                btn.disabled = false;
+                btn.textContent = '重試';
+                btn.style.background = '#f44336';
+            }
+        }
+    </script>
+</body>
+</html>
