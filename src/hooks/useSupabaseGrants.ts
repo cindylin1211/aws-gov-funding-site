@@ -13,26 +13,29 @@ export const useSupabaseGrants = () => {
     try {
       setLoading(true);
       
-      // 從 Supabase 載入
-      const { data, error } = await supabase
-        .from('grants')
-        .select('*')
-        .order('created_at', { ascending: true }) as any;
+      // 先從 JSON 檔案載入（確保一定有資料）
+      const response = await fetch('/grants-database.json');
+      const jsonData = await response.json();
+      setGrants(jsonData.grants);
+      
+      // 嘗試從 Supabase 載入
+      try {
+        const { data, error } = await supabase
+          .from('grants')
+          .select('*')
+          .order('created_at', { ascending: true }) as any;
 
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        // 使用資料庫的資料
-        const grantsData = data.flatMap((row: any) => row.data as Grant[]);
-        setGrants(grantsData);
-      } else {
-        // 如果資料庫是空的，從 JSON 檔案初始化
-        const response = await fetch('/grants-database.json');
-        const jsonData = await response.json();
-        setGrants(jsonData.grants);
-        
-        // 將初始資料存入資料庫
-        await saveToSupabase(jsonData.grants);
+        if (!error && data && data.length > 0) {
+          // 如果 Supabase 有資料，使用 Supabase 的資料
+          const grantsData = data.flatMap((row: any) => row.data as Grant[]);
+          setGrants(grantsData);
+        } else if (!error && (!data || data.length === 0)) {
+          // 如果 Supabase 是空的，將 JSON 資料同步到 Supabase
+          await saveToSupabase(jsonData.grants, false);
+        }
+      } catch (supabaseError) {
+        console.warn('Supabase 連接失敗，使用本地 JSON 資料:', supabaseError);
+        // 繼續使用 JSON 資料，不顯示錯誤訊息
       }
     } catch (error) {
       console.error('載入資料錯誤:', error);
@@ -47,7 +50,7 @@ export const useSupabaseGrants = () => {
   };
 
   // 儲存到 Supabase
-  const saveToSupabase = async (grantsData: Grant[]) => {
+  const saveToSupabase = async (grantsData: Grant[], showToast = true) => {
     try {
       // 先刪除舊資料
       await (supabase.from('grants') as any).delete().neq('id', '');
@@ -62,17 +65,21 @@ export const useSupabaseGrants = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "儲存成功",
-        description: "資料已同步到雲端",
-      });
+      if (showToast) {
+        toast({
+          title: "儲存成功",
+          description: "資料已同步到雲端",
+        });
+      }
     } catch (error) {
       console.error('儲存錯誤:', error);
-      toast({
-        title: "儲存失敗",
-        description: "無法同步資料到雲端",
-        variant: "destructive",
-      });
+      if (showToast) {
+        toast({
+          title: "儲存失敗",
+          description: "無法同步資料到雲端",
+          variant: "destructive",
+        });
+      }
     }
   };
 

@@ -184,9 +184,30 @@ function GrantForm({ grant, onSave, onCancel }: {
     }
   );
 
+  // 參考資料狀態
+  const [refLinks, setRefLinks] = useState<Array<{text: string, url: string}>>(
+    grant?.參考資料 || []
+  );
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    // 過濾掉空的參考資料
+    const validRefLinks = refLinks.filter(link => link.text.trim() && link.url.trim());
+    onSave({ ...formData, 參考資料: validRefLinks });
+  };
+
+  const addRefLink = () => {
+    setRefLinks([...refLinks, { text: "", url: "" }]);
+  };
+
+  const removeRefLink = (index: number) => {
+    setRefLinks(refLinks.filter((_, i) => i !== index));
+  };
+
+  const updateRefLink = (index: number, field: 'text' | 'url', value: string) => {
+    const newRefLinks = [...refLinks];
+    newRefLinks[index][field] = value;
+    setRefLinks(newRefLinks);
   };
 
   return (
@@ -324,6 +345,49 @@ function GrantForm({ grant, onSave, onCancel }: {
             onChange={(e) => setFormData({ ...formData, 企業規模: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
             placeholder="例：中小企業, 大型企業"
           />
+        </div>
+
+        <div className="border-t pt-4">
+          <div className="flex justify-between items-center mb-3">
+            <label className="block text-sm font-medium">參考資料 (選填)</label>
+            <Button type="button" size="sm" variant="outline" onClick={addRefLink}>
+              <Plus className="mr-2 h-4 w-4" />
+              新增連結
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {refLinks.map((link, index) => (
+              <div key={index} className="grid grid-cols-12 gap-2 items-start">
+                <div className="col-span-3">
+                  <Input
+                    placeholder="連結名稱 (例：計畫官網)"
+                    value={link.text}
+                    onChange={(e) => updateRefLink(index, 'text', e.target.value)}
+                  />
+                </div>
+                <div className="col-span-8">
+                  <Input
+                    placeholder="網址 (例：https://...)"
+                    value={link.url}
+                    onChange={(e) => updateRefLink(index, 'url', e.target.value)}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    variant="destructive"
+                    onClick={() => removeRefLink(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            {refLinks.length === 0 && (
+              <p className="text-sm text-gray-500">尚未新增參考資料連結</p>
+            )}
+          </div>
         </div>
       </form>
     </Card>
