@@ -268,6 +268,16 @@ function GrantForm({ grant, onSave, onCancel }: {
     }
   );
 
+  // 子分類選項（根據補助類別動態變化）
+  const subcategoryOptions: Record<string, string[]> = {
+    "數位轉型": ["智慧製造", "智慧商業", "智慧餐飲", "AI應用", "產業升級", "服務業創新"],
+    "創新研發": ["前瞻技術", "半導體技術", "中小企業研發", "新創企業", "雲端服務", "產業升級"],
+    "人才培訓": ["企業培訓", "數位轉型培訓", "特定族群"]
+  };
+
+  // 企業規模選項
+  const companySizeOptions = ["微型企業", "中小企業", "大型企業", "新創企業"];
+
   // 參考資料狀態 - 處理舊格式（字串陣列）和新格式（物件陣列）
   const [refLinks, setRefLinks] = useState<Array<{text: string, url: string}>>(() => {
     if (!grant?.參考資料) return [];
@@ -282,8 +292,40 @@ function GrantForm({ grant, onSave, onCancel }: {
     return grant.參考資料 as Array<{text: string, url: string}>;
   });
 
+  // 當補助類別改變時，重置子分類
+  const handleCategoryChange = (category: string) => {
+    setFormData({ 
+      ...formData, 
+      補助類別: category,
+      子分類: subcategoryOptions[category]?.[0] || ""
+    });
+  };
+
+  // 處理企業規模多選
+  const handleCompanySizeToggle = (size: string) => {
+    const currentSizes = formData.企業規模 || [];
+    if (currentSizes.includes(size)) {
+      setFormData({ 
+        ...formData, 
+        企業規模: currentSizes.filter(s => s !== size)
+      });
+    } else {
+      setFormData({ 
+        ...formData, 
+        企業規模: [...currentSizes, size]
+      });
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 驗證企業規模至少選擇一個
+    if (!formData.企業規模 || formData.企業規模.length === 0) {
+      alert("請至少選擇一個企業規模");
+      return;
+    }
+    
     // 過濾掉空的參考資料
     const validRefLinks = refLinks.filter(link => link.text.trim() && link.url.trim());
     onSave({ ...formData, 參考資料: validRefLinks });
@@ -338,7 +380,7 @@ function GrantForm({ grant, onSave, onCancel }: {
               required
               className="w-full p-2 border rounded"
               value={formData.補助類別}
-              onChange={(e) => setFormData({ ...formData, 補助類別: e.target.value })}
+              onChange={(e) => handleCategoryChange(e.target.value)}
             >
               <option value="數位轉型">數位轉型</option>
               <option value="創新研發">創新研發</option>
@@ -348,11 +390,17 @@ function GrantForm({ grant, onSave, onCancel }: {
 
           <div>
             <label className="block text-sm font-medium mb-2">子分類 *</label>
-            <Input
+            <select
               required
+              className="w-full p-2 border rounded"
               value={formData.子分類}
               onChange={(e) => setFormData({ ...formData, 子分類: e.target.value })}
-            />
+            >
+              <option value="">請選擇子分類</option>
+              {subcategoryOptions[formData.補助類別]?.map((subcat) => (
+                <option key={subcat} value={subcat}>{subcat}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -367,12 +415,25 @@ function GrantForm({ grant, onSave, onCancel }: {
 
           <div>
             <label className="block text-sm font-medium mb-2">補助比例上限 *</label>
-            <Input
+            <select
               required
+              className="w-full p-2 border rounded"
               value={formData.補助比例上限}
               onChange={(e) => setFormData({ ...formData, 補助比例上限: e.target.value })}
-              placeholder="例：50%"
-            />
+            >
+              <option value="">請選擇補助比例</option>
+              <option value="無">無</option>
+              <option value="10%">10%</option>
+              <option value="20%">20%</option>
+              <option value="30%">30%</option>
+              <option value="40%">40%</option>
+              <option value="50%">50%</option>
+              <option value="60%">60%</option>
+              <option value="70%">70%</option>
+              <option value="80%">80%</option>
+              <option value="90%">90%</option>
+              <option value="100%">100%</option>
+            </select>
           </div>
 
           <div>
@@ -431,13 +492,23 @@ function GrantForm({ grant, onSave, onCancel }: {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">企業規模 (用逗號分隔) *</label>
-          <Input
-            required
-            value={formData.企業規模.join(", ")}
-            onChange={(e) => setFormData({ ...formData, 企業規模: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
-            placeholder="例：中小企業, 大型企業"
-          />
+          <label className="block text-sm font-medium mb-2">企業規模 (可多選) *</label>
+          <div className="grid grid-cols-2 gap-3 p-4 border rounded bg-gray-50">
+            {companySizeOptions.map((size) => (
+              <label key={size} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded">
+                <input
+                  type="checkbox"
+                  checked={formData.企業規模?.includes(size) || false}
+                  onChange={() => handleCompanySizeToggle(size)}
+                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                />
+                <span className="text-sm">{size}</span>
+              </label>
+            ))}
+          </div>
+          {formData.企業規模?.length === 0 && (
+            <p className="text-sm text-red-500 mt-1">請至少選擇一個企業規模</p>
+          )}
         </div>
 
         <div className="border-t pt-4">
