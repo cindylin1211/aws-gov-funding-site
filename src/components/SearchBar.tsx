@@ -7,9 +7,10 @@ interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  onClear?: () => void;
 }
 
-const SearchBar = ({ value, onChange, placeholder = "搜尋補助計畫名稱或關鍵字..." }: SearchBarProps) => {
+const SearchBar = ({ value, onChange, placeholder = "搜尋補助計畫名稱或關鍵字...", onClear }: SearchBarProps) => {
   const [inputValue, setInputValue] = useState(value);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -20,6 +21,7 @@ const SearchBar = ({ value, onChange, placeholder = "搜尋補助計畫名稱或
   const handleClear = () => {
     setInputValue("");
     onChange("");
+    onClear?.();
   };
 
   return (

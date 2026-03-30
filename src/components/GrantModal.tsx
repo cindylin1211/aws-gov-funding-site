@@ -16,23 +16,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface Grant {
-  id: string;
-  計畫名稱: string;
-  補助類別: string;
-  子分類: string;
-  補助重點: string;
-  補助對象: string[];
-  補助金額: string;
-  補助比例上限: string;
-  計畫時程: string;
-  主辦單位: string;
-  參考資料: string[];
-  企業規模: string[];
-  金額分類: string;
-  主辦機關分類: string;
-}
+import { Grant } from "@/types/grant";
 
 interface GrantModalProps {
   grant: Grant | null;
@@ -164,9 +148,15 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
               </div>
               <div className="space-y-2 pl-7">
                 {grant.參考資料.map((reference, index) => (
-                  <div key={index} className="flex items-center gap-2">
+                  <div 
+                    key={index} 
+                    className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => {
+                      window.open(reference.url, '_blank');
+                    }}
+                  >
                     <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{reference}</span>
+                    <span className="text-muted-foreground hover:text-primary transition-colors">{reference.text}</span>
                   </div>
                 ))}
               </div>
@@ -180,7 +170,12 @@ const GrantModal = ({ grant, isOpen, onClose }: GrantModalProps) => {
             <Button variant="outline" onClick={onClose}>
               關閉
             </Button>
-            <Button className="bg-gradient-primary">
+            <Button 
+              className="bg-gradient-primary"
+              onClick={() => {
+                window.open('https://pages.awscloud.com/aws-gov-fund-registration.html', '_blank');
+              }}
+            >
               <ExternalLink className="h-4 w-4 mr-2" />
               前往申請
             </Button>

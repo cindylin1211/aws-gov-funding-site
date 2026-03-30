@@ -16,7 +16,7 @@ exports.handler = async (event) => {
   console.log('Event:', JSON.stringify(event, null, 2));
 
   // Handle OPTIONS request for CORS
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.requestContext?.http?.method === 'OPTIONS') {
     return {
       statusCode: 200,
       headers,
@@ -25,10 +25,17 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { httpMethod, path, pathParameters } = event;
+    const httpMethod = event.requestContext?.http?.method || event.httpMethod;
+    let rawPath = event.rawPath || event.path || '';
+    const pathParameters = event.pathParameters || {};
+    
+    // Remove /prod prefix if present
+    if (rawPath.startsWith('/prod')) {
+      rawPath = rawPath.substring(5);
+    }
     
     // GET /grants - List all grants
-    if (httpMethod === 'GET' && path === '/grants') {
+    if (httpMethod === 'GET' && rawPath === '/grants') {
       const command = new ScanCommand({
         TableName: TABLE_NAME
       });
@@ -71,7 +78,7 @@ exports.handler = async (event) => {
     
     // POST /grants - Create new grant
     // PUT /grants - Update grant
-    if ((httpMethod === 'POST' || httpMethod === 'PUT') && path === '/grants') {
+    if ((httpMethod === 'POST' || httpMethod === 'PUT') && rawPath === '/grants') {
       const body = JSON.parse(event.body);
       
       const command = new PutCommand({
@@ -110,7 +117,11 @@ exports.handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'Invalid request' })
+      body: JSON.stringify({ 
+        error: 'Invalid request',
+        method: httpMethod,
+        path: rawPath
+      })
     };
     
   } catch (error) {

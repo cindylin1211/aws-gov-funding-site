@@ -4,19 +4,21 @@ import SearchBar from "@/components/SearchBar";
 import FilterSection from "@/components/FilterSection";
 import GrantCard from "@/components/GrantCard";
 import GrantModal from "@/components/GrantModal";
+import ChatAssistant from "@/components/ChatAssistant";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, Search as SearchIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Grant } from "@/types/grant";
 
 const Index = () => {
-  const { grantsData, filteredGrants, filters, loading, error, updateFilter, sortGrants } = useGrantsData();
-  const [selectedGrant, setSelectedGrant] = useState(null);
+  const { grantsData, filteredGrants, filters, loading, error, updateFilter, clearAllFilters, sortGrants } = useGrantsData();
+  const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState('default');
 
-  const handleGrantClick = (grant: any) => {
+  const handleGrantClick = (grant: Grant) => {
     setSelectedGrant(grant);
     setIsModalOpen(true);
   };
@@ -76,10 +78,10 @@ const Index = () => {
       <header className="bg-gradient-hero text-white py-16 px-4">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">
-            政府補助計畫搜尋器
+            AWS 政府補助計畫搜尋器
           </h1>
           <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            快速找到適合您企業的政府補助計畫，加速業務發展與創新轉型
+            快速找到適合您客戶的政府補助計畫，加速業務發展與創新轉型
           </p>
           
           {/* Search Bar */}
@@ -88,6 +90,7 @@ const Index = () => {
               value={filters.search}
               onChange={(value) => updateFilter('search', value)}
               placeholder="搜尋補助計畫名稱、關鍵字或主辦機關..."
+              onClear={clearAllFilters}
             />
           </div>
         </div>
@@ -104,6 +107,8 @@ const Index = () => {
                 onFilterChange={updateFilter}
                 categoriesData={grantsData.categories}
                 filtersData={grantsData.filters}
+                totalGrantsCount={grantsData.grants?.length || 0}
+                allGrants={grantsData.grants || []}
               />
             )}
           </aside>
@@ -172,6 +177,60 @@ const Index = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
+
+      {/* Footer */}
+      <footer className="bg-gradient-hero text-white py-10 px-4 mt-16">
+        <div className="container mx-auto max-w-4xl">
+          <div className="flex flex-col items-center justify-center gap-6 text-center">
+            {/* Contact Section */}
+            <div className="space-y-4 w-full">
+              <h3 className="text-lg font-semibold mb-4">聯絡方式</h3>
+              <div className="space-y-3 text-sm">
+                <div className="opacity-90">
+                  <span className="font-medium">補助相關問題 - PM Maggie:</span>{" "}
+                  <a href="mailto:maggieyj@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
+                    maggieyj@amazon.com
+                  </a>
+                  {" | "}
+                  <a 
+                    href="https://amazon.enterprise.slack.com/team/U06451XD9HR" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white/80 hover:underline transition-colors duration-fast"
+                  >
+                    @Maggie Chang
+                  </a>
+                </div>
+                <div className="opacity-90">
+                  <span className="font-medium">網站技術相關 - Cindy:</span>{" "}
+                  <a href="mailto:cindyjw@amazon.com" className="hover:text-white/80 hover:underline transition-colors duration-fast">
+                    cindyjw@amazon.com
+                  </a>
+                  {" | "}
+                  <a 
+                    href="https://amazon.enterprise.slack.com/team/U0960E9NWBA" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white/80 hover:underline transition-colors duration-fast"
+                  >
+                    @Cindy Lin
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            {/* Copyright */}
+            <div className="border-t border-white/20 pt-4 w-full">
+              <p className="text-sm opacity-90">
+                © 2026 AWS 政府補助網站 - 內部工具
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Chat Assistant */}
+      <ChatAssistant />
     </div>
   );
 };

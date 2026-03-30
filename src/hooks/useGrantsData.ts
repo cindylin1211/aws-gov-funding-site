@@ -1,21 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-
-interface Grant {
-  id: string;
-  計畫名稱: string;
-  補助類別: string;
-  子分類: string;
-  補助重點: string;
-  補助對象: string[];
-  補助金額: string;
-  補助比例上限: string;
-  計畫時程: string;
-  主辦單位: string;
-  參考資料: string[];
-  企業規模: string[];
-  金額分類: string;
-  主辦機關分類: string;
-}
+import { Grant } from "@/types/grant";
 
 interface GrantsDatabase {
   grants: Grant[];
@@ -27,9 +11,9 @@ interface Filters {
   search: string;
   mainCategory: string;
   subCategory: string;
-  companySize: string;
-  grantAmount: string;
-  agency: string;
+  companySize: string[];  // 改為陣列以支援多重選取
+  grantAmount: string[];  // 改為陣列以支援多重選取
+  agency: string[];       // 改為陣列以支援多重選取
 }
 
 // Helper function to match company size
@@ -72,9 +56,9 @@ export const useGrantsData = () => {
     search: '',
     mainCategory: 'all',
     subCategory: '',
-    companySize: '',
-    grantAmount: '',
-    agency: ''
+    companySize: [],    // 初始化為空陣列
+    grantAmount: [],    // 初始化為空陣列
+    agency: []          // 初始化為空陣列
   });
 
   // Load grants data
@@ -82,14 +66,36 @@ export const useGrantsData = () => {
     const loadGrantsData = async () => {
       try {
         console.log('開始載入補助資料...');
+<<<<<<< HEAD
         const API_URL = import.meta.env.VITE_GRANTS_API_URL;
         
         if (!API_URL) {
           // Fallback to JSON file if API not configured
+=======
+        
+        // 動態導入 Supabase（避免在不需要時載入）
+        const { supabase } = await import('@/integrations/supabase/client');
+        
+        // 先嘗試從 Supabase 載入
+        const { data: supabaseData, error: supabaseError } = await supabase
+          .from('grants')
+          .select('*')
+          .order('created_at', { ascending: true }) as any;
+
+        let grants: Grant[] = [];
+
+        if (!supabaseError && supabaseData && supabaseData.length > 0) {
+          console.log('從 Supabase 載入資料');
+          grants = supabaseData.flatMap((row: any) => row.data as Grant[]);
+        } else {
+          // 如果 Supabase 沒有資料，從 JSON 檔案載入
+          console.log('從 JSON 檔案載入資料');
+>>>>>>> 1ad781ea3c3ab2a54e79d48636eb6ab8e0f8af3d
           const response = await fetch('/grants-database.json');
           if (!response.ok) {
             throw new Error('無法載入補助資料');
           }
+<<<<<<< HEAD
           const data = await response.json();
           setGrantsData(data);
         } else {
@@ -154,6 +160,65 @@ export const useGrantsData = () => {
           setGrantsData(transformedData);
         }
         console.log('補助資料載入完成');
+=======
+          const jsonData = await response.json();
+          grants = jsonData.grants;
+        }
+
+        // 重新計算分類統計
+        const categoryCounts = grants.reduce((acc: any, grant: Grant) => {
+          const category = grant.補助類別;
+          if (!acc[category]) {
+            acc[category] = { count: 0, subcategories: {} };
+          }
+          acc[category].count++;
+          
+          const subCategory = grant.子分類;
+          if (!acc[category].subcategories[subCategory]) {
+            acc[category].subcategories[subCategory] = 0;
+          }
+          acc[category].subcategories[subCategory]++;
+          
+          return acc;
+        }, {});
+
+        // 重建完整資料結構
+        const data = {
+          grants,
+          categories: {
+            main: Object.entries(categoryCounts).map(([name, info]: [string, any]) => ({
+              id: name.toLowerCase().replace(/\s+/g, '-'),
+              name,
+              count: info.count,
+              subcategories: Object.entries(info.subcategories).map(([subName, count]) => ({
+                id: subName.toLowerCase().replace(/\s+/g, '-'),
+                name: subName,
+                count
+              }))
+            }))
+          },
+          filters: {
+            companySize: [...new Set(grants.flatMap((g: Grant) => g.企業規模))].map(size => ({
+              id: size.toLowerCase().replace(/\s+/g, '-'),
+              name: size,
+              value: size
+            })),
+            grantAmount: [...new Set(grants.map((g: Grant) => g.金額分類))].map(amount => ({
+              id: amount.toLowerCase().replace(/\s+/g, '-'),
+              name: amount,
+              value: amount
+            })),
+            agency: [...new Set(grants.map((g: Grant) => g.主辦機關分類))].map(agency => ({
+              id: agency.toLowerCase().replace(/\s+/g, '-'),
+              name: agency,
+              value: agency
+            }))
+          }
+        };
+
+        console.log('補助數量:', grants.length);
+        setGrantsData(data);
+>>>>>>> 1ad781ea3c3ab2a54e79d48636eb6ab8e0f8af3d
       } catch (err) {
         console.error('載入資料錯誤:', err);
         setError(err instanceof Error ? err.message : '載入資料時發生錯誤');
@@ -163,6 +228,15 @@ export const useGrantsData = () => {
     };
 
     loadGrantsData();
+
+    // 設定定期輪詢（每 5 秒檢查一次更新）
+    const pollInterval = setInterval(() => {
+      loadGrantsData();
+    }, 5000);
+
+    return () => {
+      clearInterval(pollInterval);
+    };
   }, []);
 
   // Filter grants based on current filters
@@ -193,23 +267,27 @@ export const useGrantsData = () => {
         }
       }
 
-      // Company size filter
-      if (filters.companySize) {
-        if (!grant.企業規模 || !grant.企業規模.includes(filters.companySize)) {
+      // Company size filter - 支援多重選取（OR 邏輯）
+      if (filters.companySize.length > 0) {
+        // 檢查補助計畫的企業規模陣列是否與任一選取的企業規模有交集
+        const hasMatch = filters.companySize.some(selectedSize => 
+          grant.企業規模 && grant.企業規模.includes(selectedSize)
+        );
+        if (!hasMatch) {
           return false;
         }
       }
 
-      // Grant amount filter
-      if (filters.grantAmount) {
-        if (grant.金額分類 !== filters.grantAmount) {
+      // Grant amount filter - 支援多重選取（OR 邏輯）
+      if (filters.grantAmount.length > 0) {
+        if (!filters.grantAmount.includes(grant.金額分類)) {
           return false;
         }
       }
 
-      // Agency filter
-      if (filters.agency) {
-        if (grant.主辦機關分類 !== filters.agency) {
+      // Agency filter - 支援多重選取（OR 邏輯）
+      if (filters.agency.length > 0) {
+        if (!filters.agency.includes(grant.主辦機關分類)) {
           return false;
         }
       }
@@ -224,6 +302,18 @@ export const useGrantsData = () => {
       ...prev,
       [filterType]: value
     }));
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setFilters({
+      search: '',
+      mainCategory: 'all',
+      subCategory: '',
+      companySize: [],    // 清除為空陣列
+      grantAmount: [],    // 清除為空陣列
+      agency: []          // 清除為空陣列
+    });
   };
 
   // Sort grants
@@ -256,6 +346,7 @@ export const useGrantsData = () => {
     loading,
     error,
     updateFilter,
+    clearAllFilters,
     sortGrants
   };
 };
