@@ -184,10 +184,19 @@ function GrantForm({ grant, onSave, onCancel }: {
     }
   );
 
-  // 參考資料狀態
-  const [refLinks, setRefLinks] = useState<Array<{text: string, url: string}>>(
-    grant?.參考資料 || []
-  );
+  // 參考資料狀態 - 處理舊格式（字串陣列）和新格式（物件陣列）
+  const [refLinks, setRefLinks] = useState<Array<{text: string, url: string}>>(() => {
+    if (!grant?.參考資料) return [];
+    
+    // 如果是字串陣列，轉換為物件陣列
+    if (Array.isArray(grant.參考資料) && grant.參考資料.length > 0) {
+      if (typeof grant.參考資料[0] === 'string') {
+        return grant.參考資料.map((ref: any) => ({ text: ref, url: ref }));
+      }
+    }
+    
+    return grant.參考資料 as Array<{text: string, url: string}>;
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

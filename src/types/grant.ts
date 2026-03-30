@@ -9,7 +9,7 @@ export interface Grant {
   補助比例上限: string;
   計畫時程: string;
   主辦單位: string;
-  參考資料: { text: string; url: string }[];
+  參考資料: string[] | { text: string; url: string }[];
   企業規模: string[];
   金額分類: string;
   主辦機關分類: string;
