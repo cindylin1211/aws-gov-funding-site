@@ -4,7 +4,6 @@ import SearchBar from "@/components/SearchBar";
 import FilterSection from "@/components/FilterSection";
 import GrantCard from "@/components/GrantCard";
 import GrantModal from "@/components/GrantModal";
-import ChatAssistant from "@/components/ChatAssistant";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -228,9 +227,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-
-      {/* Chat Assistant */}
-      <ChatAssistant />
     </div>
   );
 };
