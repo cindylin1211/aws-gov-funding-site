@@ -6,10 +6,10 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Grant } from "@/types/grant";
 import { Download, Plus, Edit, Trash2, Save, X, Home, RefreshCw } from "lucide-react";
-import { useSupabaseGrants } from "@/hooks/useSupabaseGrants";
+import { useDynamoDBGrants } from "@/hooks/useDynamoDBGrants";
 
 export default function Admin() {
-  const { grants, loading, addGrant, updateGrant, deleteGrant, refreshGrants } = useSupabaseGrants();
+  const { grants, loading, addGrant, updateGrant, deleteGrant, refreshGrants } = useDynamoDBGrants();
   const [editingGrant, setEditingGrant] = useState<Grant | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { toast } = useToast();
@@ -99,11 +99,11 @@ export default function Admin() {
           <div className="flex items-start gap-3">
             <div className="text-green-600 mt-0.5">☁️</div>
             <div className="flex-1 text-sm">
-              <p className="font-semibold text-green-900 mb-1">雲端同步已啟用</p>
+              <p className="font-semibold text-green-900 mb-1">DynamoDB 雲端同步已啟用</p>
               <ul className="text-green-800 space-y-1">
-                <li>• 所有變更會<strong>即時同步到雲端資料庫</strong></li>
+                <li>• 所有變更會<strong>即時同步到 AWS DynamoDB</strong></li>
                 <li>• <strong>所有使用者</strong>都會看到最新資料（包括部署後的網站）</li>
-                <li>• 資料會<strong>自動即時更新</strong>，無需重新整理</li>
+                <li>• 資料儲存在 AWS 雲端，安全可靠</li>
                 <li>• 點擊「匯出資料」可下載備份檔案</li>
               </ul>
             </div>

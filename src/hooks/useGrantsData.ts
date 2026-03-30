@@ -66,104 +66,17 @@ export const useGrantsData = () => {
     const loadGrantsData = async () => {
       try {
         console.log('開始載入補助資料...');
-<<<<<<< HEAD
-        const API_URL = import.meta.env.VITE_GRANTS_API_URL;
+        const API_URL = import.meta.env.VITE_GRANTS_API_URL || 'https://03rc0jt6dg.execute-api.us-west-2.amazonaws.com/prod';
         
-        if (!API_URL) {
-          // Fallback to JSON file if API not configured
-=======
-        
-        // 動態導入 Supabase（避免在不需要時載入）
-        const { supabase } = await import('@/integrations/supabase/client');
-        
-        // 先嘗試從 Supabase 載入
-        const { data: supabaseData, error: supabaseError } = await supabase
-          .from('grants')
-          .select('*')
-          .order('created_at', { ascending: true }) as any;
-
-        let grants: Grant[] = [];
-
-        if (!supabaseError && supabaseData && supabaseData.length > 0) {
-          console.log('從 Supabase 載入資料');
-          grants = supabaseData.flatMap((row: any) => row.data as Grant[]);
-        } else {
-          // 如果 Supabase 沒有資料，從 JSON 檔案載入
-          console.log('從 JSON 檔案載入資料');
->>>>>>> 1ad781ea3c3ab2a54e79d48636eb6ab8e0f8af3d
-          const response = await fetch('/grants-database.json');
-          if (!response.ok) {
-            throw new Error('無法載入補助資料');
-          }
-<<<<<<< HEAD
-          const data = await response.json();
-          setGrantsData(data);
-        } else {
-          // Load from DynamoDB via API
-          const response = await fetch(`${API_URL}/grants`);
-          if (!response.ok) {
-            throw new Error('無法載入補助資料');
-          }
-          const data = await response.json();
-          
-          // Transform API response to match expected format
-          const transformedData = {
-            grants: data.grants || [],
-            categories: {
-              main: [
-                {
-                  id: "digital-transformation",
-                  name: "數位轉型",
-                  count: data.grants?.filter((g: Grant) => g.補助類別 === "數位轉型").length || 0,
-                  subcategories: []
-                },
-                {
-                  id: "innovation-rd",
-                  name: "創新研發",
-                  count: data.grants?.filter((g: Grant) => g.補助類別 === "創新研發").length || 0,
-                  subcategories: []
-                },
-                {
-                  id: "talent-training",
-                  name: "人才培訓",
-                  count: data.grants?.filter((g: Grant) => g.補助類別 === "人才培訓").length || 0,
-                  subcategories: []
-                }
-              ]
-            },
-            filters: {
-              companySize: [
-                { id: "all", name: "不限", value: "" },
-                { id: "large", name: "大型企業", value: "大型企業" },
-                { id: "sme", name: "中小企業", value: "中小企業" },
-                { id: "micro", name: "微型企業", value: "微型企業" },
-                { id: "startup", name: "新創企業", value: "新創企業" }
-              ],
-              grantAmount: [
-                { id: "all", name: "不限", value: "" },
-                { id: "small", name: "100萬以下", value: "小額補助" },
-                { id: "medium", name: "100-500萬", value: "中額補助" },
-                { id: "large", name: "500-1000萬", value: "大額補助" },
-                { id: "extra-large", name: "1000萬以上", value: "超大額補助" },
-                { id: "unlimited", name: "無上限", value: "無上限補助" }
-              ],
-              agency: [
-                { id: "all", name: "不限", value: "" },
-                { id: "moea", name: "經濟部體系", value: "經濟部" },
-                { id: "moda", name: "數位發展部", value: "數位發展部" },
-                { id: "mol", name: "勞動部", value: "勞動部" },
-                { id: "local", name: "地方政府", value: "地方政府" }
-              ]
-            }
-          };
-          
-          setGrantsData(transformedData);
+        // Load from DynamoDB via API
+        const response = await fetch(`${API_URL}/grants`);
+        if (!response.ok) {
+          throw new Error('無法載入補助資料');
         }
-        console.log('補助資料載入完成');
-=======
-          const jsonData = await response.json();
-          grants = jsonData.grants;
-        }
+        const data = await response.json();
+        const grants = data.grants || [];
+        
+        console.log('從 DynamoDB 載入資料，共', grants.length, '個計畫');
 
         // 重新計算分類統計
         const categoryCounts = grants.reduce((acc: any, grant: Grant) => {
@@ -183,7 +96,7 @@ export const useGrantsData = () => {
         }, {});
 
         // 重建完整資料結構
-        const data = {
+        const transformedData = {
           grants,
           categories: {
             main: Object.entries(categoryCounts).map(([name, info]: [string, any]) => ({
@@ -215,10 +128,9 @@ export const useGrantsData = () => {
             }))
           }
         };
-
-        console.log('補助數量:', grants.length);
-        setGrantsData(data);
->>>>>>> 1ad781ea3c3ab2a54e79d48636eb6ab8e0f8af3d
+        
+        setGrantsData(transformedData);
+        console.log('補助資料載入完成');
       } catch (err) {
         console.error('載入資料錯誤:', err);
         setError(err instanceof Error ? err.message : '載入資料時發生錯誤');
@@ -229,10 +141,10 @@ export const useGrantsData = () => {
 
     loadGrantsData();
 
-    // 設定定期輪詢（每 5 秒檢查一次更新）
+    // 設定定期輪詢（每 30 秒檢查一次更新）
     const pollInterval = setInterval(() => {
       loadGrantsData();
-    }, 5000);
+    }, 30000);
 
     return () => {
       clearInterval(pollInterval);
