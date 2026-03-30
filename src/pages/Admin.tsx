@@ -1,18 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Grant } from "@/types/grant";
-import { Download, Plus, Edit, Trash2, Save, X, Home, RefreshCw } from "lucide-react";
+import { Download, Plus, Edit, Trash2, Save, X, Home, RefreshCw, Lock } from "lucide-react";
 import { useDynamoDBGrants } from "@/hooks/useDynamoDBGrants";
+
+const ADMIN_PASSWORD = "awsgovqc";
 
 export default function Admin() {
   const { grants, loading, addGrant, updateGrant, deleteGrant, refreshGrants } = useDynamoDBGrants();
   const [editingGrant, setEditingGrant] = useState<Grant | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { toast } = useToast();
+  
+  // 密碼驗證狀態
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPasswordError, setShowPasswordError] = useState(false);
+
+  // 檢查 sessionStorage 中是否已經驗證過
+  useEffect(() => {
+    const authenticated = sessionStorage.getItem("admin_authenticated");
+    if (authenticated === "true") {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("admin_authenticated", "true");
+      setShowPasswordError(false);
+      toast({
+        title: "驗證成功",
+        description: "歡迎使用管理介面",
+      });
+    } else {
+      setShowPasswordError(true);
+      toast({
+        title: "密碼錯誤",
+        description: "請輸入正確的密碼",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // 如果未驗證，顯示密碼輸入頁面
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+        <Card className="w-full max-w-md p-8">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+              <Lock className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold mb-2">管理介面登入</h1>
+            <p className="text-gray-600">請輸入密碼以訪問管理功能</p>
+          </div>
+          
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div>
+              <Input
+                type="password"
+                placeholder="請輸入密碼"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setShowPasswordError(false);
+                }}
+                className={showPasswordError ? "border-red-500" : ""}
+                autoFocus
+              />
+              {showPasswordError && (
+                <p className="text-red-500 text-sm mt-2">密碼錯誤，請重試</p>
+              )}
+            </div>
+            
+            <Button type="submit" className="w-full">
+              登入
+            </Button>
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full"
+              onClick={() => window.location.href = '/'}
+            >
+              返回首頁
+            </Button>
+          </form>
+        </Card>
+      </div>
+    );
+  }
 
   const handleExport = () => {
     const dataStr = JSON.stringify({ grants }, null, 2);
