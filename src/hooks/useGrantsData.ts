@@ -82,15 +82,78 @@ export const useGrantsData = () => {
     const loadGrantsData = async () => {
       try {
         console.log('開始載入補助資料...');
-        const response = await fetch('/grants-database.json');
-        console.log('Response status:', response.status);
-        if (!response.ok) {
-          throw new Error('無法載入補助資料');
+        const API_URL = import.meta.env.VITE_GRANTS_API_URL;
+        
+        if (!API_URL) {
+          // Fallback to JSON file if API not configured
+          const response = await fetch('/grants-database.json');
+          if (!response.ok) {
+            throw new Error('無法載入補助資料');
+          }
+          const data = await response.json();
+          setGrantsData(data);
+        } else {
+          // Load from DynamoDB via API
+          const response = await fetch(`${API_URL}/grants`);
+          if (!response.ok) {
+            throw new Error('無法載入補助資料');
+          }
+          const data = await response.json();
+          
+          // Transform API response to match expected format
+          const transformedData = {
+            grants: data.grants || [],
+            categories: {
+              main: [
+                {
+                  id: "digital-transformation",
+                  name: "數位轉型",
+                  count: data.grants?.filter((g: Grant) => g.補助類別 === "數位轉型").length || 0,
+                  subcategories: []
+                },
+                {
+                  id: "innovation-rd",
+                  name: "創新研發",
+                  count: data.grants?.filter((g: Grant) => g.補助類別 === "創新研發").length || 0,
+                  subcategories: []
+                },
+                {
+                  id: "talent-training",
+                  name: "人才培訓",
+                  count: data.grants?.filter((g: Grant) => g.補助類別 === "人才培訓").length || 0,
+                  subcategories: []
+                }
+              ]
+            },
+            filters: {
+              companySize: [
+                { id: "all", name: "不限", value: "" },
+                { id: "large", name: "大型企業", value: "大型企業" },
+                { id: "sme", name: "中小企業", value: "中小企業" },
+                { id: "micro", name: "微型企業", value: "微型企業" },
+                { id: "startup", name: "新創企業", value: "新創企業" }
+              ],
+              grantAmount: [
+                { id: "all", name: "不限", value: "" },
+                { id: "small", name: "100萬以下", value: "小額補助" },
+                { id: "medium", name: "100-500萬", value: "中額補助" },
+                { id: "large", name: "500-1000萬", value: "大額補助" },
+                { id: "extra-large", name: "1000萬以上", value: "超大額補助" },
+                { id: "unlimited", name: "無上限", value: "無上限補助" }
+              ],
+              agency: [
+                { id: "all", name: "不限", value: "" },
+                { id: "moea", name: "經濟部體系", value: "經濟部" },
+                { id: "moda", name: "數位發展部", value: "數位發展部" },
+                { id: "mol", name: "勞動部", value: "勞動部" },
+                { id: "local", name: "地方政府", value: "地方政府" }
+              ]
+            }
+          };
+          
+          setGrantsData(transformedData);
         }
-        const data = await response.json();
-        console.log('載入的資料:', data);
-        console.log('補助數量:', data.grants?.length);
-        setGrantsData(data);
+        console.log('補助資料載入完成');
       } catch (err) {
         console.error('載入資料錯誤:', err);
         setError(err instanceof Error ? err.message : '載入資料時發生錯誤');

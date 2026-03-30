@@ -15,4 +15,6 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // 🔹 這一行是為了 GitHub Pages
+  base: "/aws-gov-funding-site/",
 }));
